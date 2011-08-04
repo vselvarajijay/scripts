@@ -1,37 +1,24 @@
 #!/usr/bin/python
 #A file system search tool with Regular expressions
 
-import argparse, os
+import argparse, os, re
 
-
-def discover(path, query):
-        pass
-def discover(path, query, outputFile):
-	output = open(outputFile,'w')
-       	for(path, dirs, files) in os.walk(path):
+def discover(path, query, comparer):
+	for(path, dirs, files) in os.walk(path):
 		path = path.split('/')
-		if query in path[len(path)-1]:
-			output.write("/".join(path+['\n']))
+		if comparer(path[len(path)-1]):
+			print "/".join(path)
 		for file in files:
-			if query in file:
-				output.write("/".join(path+[file]+['\n']))
-
+			if comparer(file):
+				print "/".join(path+[file])
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Search file system')
 	parser.add_argument('path', help='Folder to search')
 	parser.add_argument('query', help='Search filter')
-	parser.add_argument('-o','--output', help='Output the parsed results')
-	
 	args = parser.parse_args()
-	
-	path = args.path
-	output = args.output
-	query = args.query
 
-	if output <> 'None':
-		discover(path, query, output)
-	else:
-		discover(path, query) 
-	
+	comparer = lambda x: re.search(re.compile(args.query), x)
+
+	discover(args.path, args.query, comparer)
 	
